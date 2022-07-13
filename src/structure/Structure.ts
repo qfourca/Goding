@@ -1,14 +1,6 @@
-import * as nbt from 'prismarine-nbt'
-import axios from 'axios'
 import * as THREE from 'three'
-axios.get('/home.json')
-.then((response) => {
-    let test:Structure = new Structure(response.data.value)
 
-})
-.catch(error => {
-    console.log(error)
-})
+
 
 export default class Structure {
     public size: THREE.Vector3
@@ -41,5 +33,8 @@ export default class Structure {
             }
         });
         console.log(this.blockArrange)
+    }
+    at(pos:THREE.Vector3):number {
+        return this.blockArrange[pos.z][pos.y][pos.x]
     }
 }

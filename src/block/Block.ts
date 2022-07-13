@@ -6,7 +6,7 @@ export default class Blcok {
     private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0x55D7D7 })
     private readonly geometry: THREE.BoxGeometry = new THREE.BoxGeometry(this.defaultWidth, this.defaultHeight, this.defaultDepth)
 
-    private mesh: THREE.Mesh
+    public mesh: THREE.Mesh
     
     constructor(position: THREE.Vector3, material?: THREE.Material) {
         this.mesh = new THREE.Mesh(this.geometry, material ? material : this.defaultMaterial)  
