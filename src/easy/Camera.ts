@@ -3,7 +3,7 @@ import * as THREE from 'three'
 class Camera extends THREE.PerspectiveCamera{
 	constructor (FOV: number, size: number) {
 		super(FOV, size)
-		this.position.z = 300
+		this.position.z = 30
 	}
 }
 

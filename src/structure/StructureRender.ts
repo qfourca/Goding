@@ -1,15 +1,16 @@
 import Structure from "./Structure";
 import Block from '../block/Block'
 import { Scene, Vector3, Group, Material, Vector2 } from "three";
-import material from '../material'
+import materialList from '../material/material'
+import skip from '../material/skip'
 import mouseEvent from '../event/mouseEvent'
-import * as THREE from 'three'
+
 export default class StructureRender {
     private structure: Structure
     private blocks: Array<Block>;
     private group:Group = new Group();
-    private chunk:Array<Vector2> = new Array()
     
+    private debugger:Debugger = new Debugger()
     constructor(structure: Structure) {
         this.structure = structure
         this.blocks = new Array()
@@ -19,19 +20,43 @@ export default class StructureRender {
             for(let y = 0; y < this.structure.size.y; y++) {
                 for(let x = 0; x < this.structure.size.x; x++) {
                     const element = this.structure.in(new Vector3(x, y, z))
-                    let material
-                    if(element == 1) {
-                        material = new THREE.MeshStandardMaterial({ color: 0xffffff })
+                    const materialName:string = this.structure.toMaterial(element)
+                    if(!skip.includes(materialName)) {
+                        const material:Material = materialList.get(materialName)!
+                        if(material == undefined) {
+                            this.debugger.add(materialName)
+                        }
+                        this.blocks[counter] = new Block(new Vector3(x, y, z), material)
+                        this.group.add(this.blocks[counter].mesh)
                     }
-                    this.blocks[counter] = new Block(new Vector3(x * 10, y * 10, z * 10), material)
-                    this.group.add(this.blocks[counter].mesh)
-                    console.log('.')
                 }
             }
-        }
+        }        
+        this.debugger.print()
     }
     render(scene:Scene) {
+        
+        console.log(this.group)
         mouseEvent(document.getElementById("three-js container")!, this.group)
         scene.add(this.group)
+    }
+
+}
+
+class Debugger {
+    private unknown:Array<string>
+    constructor() {
+        this.unknown = new Array()
+    }
+    add(arg:string) {
+
+        if(!this.unknown.includes(arg)) {
+            this.unknown.push(arg)
+        }
+    }
+    print() {
+        this.unknown.forEach((element:string) => {
+            console.log(element)
+        })
     }
 }

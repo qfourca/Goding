@@ -1,3 +1,5 @@
+import { Vector3 } from "three";
+
 var mouseDown = false,
         mouseX = 0,
         mouseY = 0;

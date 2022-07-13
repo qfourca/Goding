@@ -4,5 +4,5 @@
         "moduleResolution": "node",
         "strict": true
     },
-    "include": ["**/*.ts", "src/material.ts"]
+    "include": ["**/*.ts", "src/material/material.ts"]
 }

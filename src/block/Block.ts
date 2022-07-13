@@ -1,10 +1,7 @@
 import * as THREE from 'three'
 export default class Blcok {
-    private readonly defaultWidth: number = 10;
-    private readonly defaultHeight: number = 10;
-    private readonly defaultDepth: number = 10;
     private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0x55D7D7 })
-    private readonly geometry: THREE.BoxGeometry = new THREE.BoxGeometry(this.defaultWidth, this.defaultHeight, this.defaultDepth)
+    private readonly geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1)
 
     public mesh: THREE.Mesh
     
