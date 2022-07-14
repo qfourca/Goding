@@ -16,9 +16,9 @@ export default class StructureRender {
         this.structure = structure
         this.blocks = new Array()
 
-        // this.structure.blockOffset.forEach((val, key, map) => {
-        //     console.log(key, val)
-        // })
+        this.structure.blockOffset.forEach((val, key, map) => {
+            console.log(key, val)
+        })
         structure.loadTexture().then(() => {
             console.log(structure.blockOffset)
             let counter: number = 0

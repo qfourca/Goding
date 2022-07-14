@@ -22,7 +22,7 @@ export default class TextureLoader{
     
     private async loadTexture(fileName:string): Promise<THREE.Texture> {
         if(this.textures.has(fileName)) {
-            return this.textures.get(fileName)!
+            return this.textures.get(fileName)!.clone()
         }
         else {
             
@@ -75,39 +75,43 @@ export default class TextureLoader{
     }
     
     public async blockToMaterial(block:string):Promise<Array<THREE.Material>> {
+        console.log(block)
         const structure = await this.loadTextureStructure(block)
-        const textureName:strObj = {
-            up: '',
-            down: '',
-            east: '',
-            west: '',
-            north: '',
-            south: ''
+        const allTexture:strObj = {
+            textures: {},
+            elements: {}
         }
-        for(let i = structure.length - 1; i >= 0; i--) {
-            const textures:strObj = structure[i].textures
-            if(textures != undefined) {
-                for (const key of Object.keys(textureName)) {
-                    if(textureName[key] == '') {
-                        textureName[key] = textures[key]
-                    }
-                    else if(textureName[key].includes('#')) {
-                        textureName[key] = textures[textureName[key].substring(1)]
-                    }
-                }
+        structure.forEach(element => {
+            allTexture.textures = { ...allTexture.textures, ...element.textures }
+            allTexture.elements = { ...allTexture.elements, ...element.elements }
+        })
+        for (let element in allTexture.textures) {
+            if(allTexture.textures[element][0] == "#") {
+                allTexture.textures[element] = allTexture.textures[allTexture.textures[element].substring(1)]
             }
-        }
+        } 
+        this.arrange.forEach(element => {
+            if(allTexture.elements[0].faces[element].texture[0] == '#') {
+                allTexture.elements[0].faces[element].texture = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
+            }
+            // console.log(block)
+            if(block == 'block/acacia_wood[axis=x]') {
+                console.log(element, allTexture.elements[0].faces[element].texture)
+            }
+            
+        })
+
         return await Promise.all([
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["up"], "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["down"], "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["east"], "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["west"], "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["south"], "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["north"], "minecraft:"))})
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["east"].texture, "minecraft:"))}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["north"].texture, "minecraft:"))}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["south"].texture, "minecraft:"))}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["west"].texture, "minecraft:"))}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["up"].texture, "minecraft:"))}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["down"].texture, "minecraft:"))})
         ])
     }
 }
 
 interface strObj {
-    [key: string]: string
+    [key: string]: any
 }

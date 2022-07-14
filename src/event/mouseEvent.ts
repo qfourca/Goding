@@ -44,6 +44,13 @@ export default (element:HTMLElement, mesh:any) => {
 }
 
 function rotateScene(deltaX:number, deltaY:number, root:any) {
-    root.rotation.y += deltaX / 100;
-    root.rotation.x += deltaY / 100;
+    if(root.rotation == undefined) {
+        root.mesh.rotation.y += deltaX / 100;
+        root.mesh.rotation.x += deltaY / 100;
+    }
+    else {
+        root.rotation.y += deltaX / 100;
+        root.rotation.x += deltaY / 100;
+    }
+    
 }

@@ -8,7 +8,5 @@ export default [
 
     "brewing_stand",
     "acacia_stairs",
-    "grass_block",
-    "acacia_leaves",
-
+    "iron_bar",
 ]
