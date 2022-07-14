@@ -1,11 +1,12 @@
 import * as THREE from 'three'
-export default class Blcok {
-    private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0x55D7D7 })
+export default class Block {
+    private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
+
     private readonly geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1)
 
     public mesh: THREE.Mesh
     
-    constructor(position: THREE.Vector3, material?: THREE.Material) {
+    constructor(position: THREE.Vector3, material?: THREE.Material | Array<THREE.Material>) {
         this.mesh = new THREE.Mesh(this.geometry, material ? material : this.defaultMaterial)  
         this.mesh.position.set(position.x, position.y, position.z)
     }

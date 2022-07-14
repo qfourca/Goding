@@ -4,7 +4,7 @@ var mouseDown = false,
         mouseX = 0,
         mouseY = 0;
 
-function onMouseMove(evt:any, mesh:THREE.Group) {
+function onMouseMove(evt:any, mesh:any) {
     if (!mouseDown) {
         return;
     }
@@ -31,7 +31,7 @@ function onMouseUp(evt:any) {
     mouseDown = false;
 }
 
-export default (element:HTMLElement, mesh:THREE.Group) => {
+export default (element:HTMLElement, mesh:any) => {
     element.addEventListener('mousemove', function (e) {
         onMouseMove(e, mesh);
     }, false);
@@ -43,7 +43,7 @@ export default (element:HTMLElement, mesh:THREE.Group) => {
     }, false);
 }
 
-function rotateScene(deltaX:number, deltaY:number, root:THREE.Group) {
+function rotateScene(deltaX:number, deltaY:number, root:any) {
     root.rotation.y += deltaX / 100;
     root.rotation.x += deltaY / 100;
 }

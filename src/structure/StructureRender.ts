@@ -14,7 +14,7 @@ export default class StructureRender {
     constructor(structure: Structure) {
         this.structure = structure
         this.blocks = new Array()
-        console.log(this.structure.size)
+
         let counter: number = 0
         for(let z = 0; z < this.structure.size.z; z++) {
             for(let y = 0; y < this.structure.size.y; y++) {
@@ -31,12 +31,10 @@ export default class StructureRender {
                     }
                 }
             }
-        }        
-        this.debugger.print()
+        }
+        // this.debugger.print()
     }
     render(scene:Scene) {
-        
-        console.log(this.group)
         mouseEvent(document.getElementById("three-js container")!, this.group)
         scene.add(this.group)
     }

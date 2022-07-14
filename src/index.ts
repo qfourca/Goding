@@ -4,6 +4,8 @@ import scene from './easy/Scene'
 import renderer from './easy/Renderer'
 import Block from './block/Block'
 
+import './logic/blockTest'
+
 import './logic/loadStructure'
 
 const autoRender = () => { 
