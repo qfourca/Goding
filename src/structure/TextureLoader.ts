@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as THREE from 'three'
 
 export default class TextureLoader{
-    private datas:Map<string, THREE.Texture> = new Map()
+    private datas:Map<string, Object> = new Map()
     private textures: Map<string, THREE.Texture> = new Map()
     private readonly textureExtension:string = '.png'
     private readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
@@ -25,7 +25,7 @@ export default class TextureLoader{
             return this.textures.get(fileName)!
         }
         else {
-            // console.log(this.textureDirectory + fileName + this.textureExtension)
+            
             const loadTexture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
             this.textures.set(fileName, loadTexture)
             return loadTexture
@@ -34,11 +34,11 @@ export default class TextureLoader{
 
     private async loadData(fileName:string): Promise<any> {
         if(this.datas.has(fileName)) {
-            this.datas.get(fileName)
+            return this.datas.get(fileName)
         }
         else {
             try {
-                const loadedData = await (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
+                const loadedData = (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
                 this.datas.set(fileName, loadedData)
                 return loadedData
             }
@@ -51,15 +51,26 @@ export default class TextureLoader{
 
     private async loadTextureStructure(fileName: string):Promise<any[]> {
         let array = new Array()
-        array.push(await this.loadData(fileName))
-        while(array.at(-1).parent != undefined) {
-            let parent = array.at(-1).parent
-            parent = this.removeString(parent, "minecraft:")
-            array.push(await this.loadData(parent))
+        const test = await this.loadData(fileName)
+        array.push(test)
+        try {
+            while(array.at(-1).parent != undefined) {
+                let parent = array.at(-1).parent
+                parent = this.removeString(parent, "minecraft:")
+                let load = await this.loadData(parent)
+                array.push(load)
+            }
         }
+        catch(e) {
+            console.log(array)
+        }
+
         return array
     }
     private removeString(original:string, remove:string) {
+        if(original == undefined) {
+            return ''
+        }
         return original.replace(remove, "") == undefined ? original : original.replace(remove, "")
     }
     

@@ -55,4 +55,7 @@ export class TextureInfo {
         this.textureName = name
         this.material = material
     }
+    noOpction() {
+        return this.textureName.substring(0, this.textureName.indexOf('[')) == '' ? this.textureName : this.textureName.substring(0, this.textureName.indexOf('['))
+    }
 }

@@ -27,7 +27,7 @@ export default class StructureRender {
                     for(let x = 0; x < this.structure.size.x; x++) {
                         const element = this.structure.in(new Vector3(x, y, z))
                         const textureInfo:TextureInfo = this.structure.blockOffset.get(element)!
-                        if(!empty.includes(textureInfo.textureName)) {
+                        if(!empty.includes(textureInfo.noOpction())) {
                             const material: Material | Array<Material> = textureInfo.material
                             this.blocks[counter] = new Block(new Vector3(x, y, z), material)
                             this.group.add(this.blocks[counter].mesh)
