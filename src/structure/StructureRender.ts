@@ -1,13 +1,14 @@
-import Structure from "./Structure";
+import Structure, { TextureInfo } from "./Structure";
 import Block from '../block/Block'
 import { Scene, Vector3, Group, Material, Vector2 } from "three";
 import materialList from '../material/material'
-import skip from '../material/skip'
+import empty from '../material/empty'
 import mouseEvent from '../event/mouseEvent'
 
 export default class StructureRender {
     private structure: Structure
     private blocks: Array<Block>;
+
     private group:Group = new Group();
     
     private debugger:Debugger = new Debugger()
@@ -15,25 +16,29 @@ export default class StructureRender {
         this.structure = structure
         this.blocks = new Array()
 
-        let counter: number = 0
-        for(let z = 0; z < this.structure.size.z; z++) {
-            for(let y = 0; y < this.structure.size.y; y++) {
-                for(let x = 0; x < this.structure.size.x; x++) {
-                    const element = this.structure.in(new Vector3(x, y, z))
-                    const materialName:string = this.structure.toMaterial(element)
-                    if(!skip.includes(materialName)) {
-                        const material:Material = materialList.get(materialName)!
-                        if(material == undefined) {
-                            this.debugger.add(materialName)
+        // this.structure.blockOffset.forEach((val, key, map) => {
+        //     console.log(key, val)
+        // })
+        structure.loadTexture().then(() => {
+            console.log(structure.blockOffset)
+            let counter: number = 0
+            for(let z = 0; z < this.structure.size.z; z++) {
+                for(let y = 0; y < this.structure.size.y; y++) {
+                    for(let x = 0; x < this.structure.size.x; x++) {
+                        const element = this.structure.in(new Vector3(x, y, z))
+                        const textureInfo:TextureInfo = this.structure.blockOffset.get(element)!
+                        if(!empty.includes(textureInfo.textureName)) {
+                            const material: Material | Array<Material> = textureInfo.material
+                            this.blocks[counter] = new Block(new Vector3(x, y, z), material)
+                            this.group.add(this.blocks[counter].mesh)
                         }
-                        this.blocks[counter] = new Block(new Vector3(x, y, z), material)
-                        this.group.add(this.blocks[counter].mesh)
                     }
                 }
             }
-        }
-        // this.debugger.print()
+        })
+        
     }
+
     render(scene:Scene) {
         mouseEvent(document.getElementById("three-js container")!, this.group)
         scene.add(this.group)
@@ -58,3 +63,4 @@ class Debugger {
         })
     }
 }
+

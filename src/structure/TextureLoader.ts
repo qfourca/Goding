@@ -25,7 +25,7 @@ export default class TextureLoader{
             return this.textures.get(fileName)!
         }
         else {
-            console.log(this.textureDirectory + fileName + this.textureExtension)
+            // console.log(this.textureDirectory + fileName + this.textureExtension)
             const loadTexture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
             this.textures.set(fileName, loadTexture)
             return loadTexture
@@ -37,17 +37,22 @@ export default class TextureLoader{
             this.datas.get(fileName)
         }
         else {
-            const loadedData = await (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
-            this.datas.set(fileName, loadedData)
-            return loadedData
+            try {
+                const loadedData = await (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
+                this.datas.set(fileName, loadedData)
+                return loadedData
+            }
+            catch(e) {
+                console.log(this.dataDirectory + fileName + this.dataExtension)
+            }
+            
         }
     }
 
     private async loadTextureStructure(fileName: string):Promise<any[]> {
-    
         let array = new Array()
         array.push(await this.loadData(fileName))
-        while(array.at(-1).parent) {
+        while(array.at(-1).parent != undefined) {
             let parent = array.at(-1).parent
             parent = this.removeString(parent, "minecraft:")
             array.push(await this.loadData(parent))
@@ -59,7 +64,6 @@ export default class TextureLoader{
     }
     
     public async blockToMaterial(block:string):Promise<Array<THREE.Material>> {
-        let retVal:Array<THREE.Material> = new Array(6)
         const structure = await this.loadTextureStructure(block)
         const textureName:strObj = {
             up: '',
@@ -89,7 +93,6 @@ export default class TextureLoader{
             new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["west"], "minecraft:"))}),
             new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["south"], "minecraft:"))}),
             new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(textureName["north"], "minecraft:"))})
-            
         ])
     }
 }
