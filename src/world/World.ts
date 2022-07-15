@@ -23,11 +23,13 @@ export default class World {
            Promise.all(
             Object.entries(this.nbt.Palette.value).map(
                 async (element: any) => {
+
                     const blockName:string = this.temp(element[0].substring(10))
-                    let material:Material | Array<Material>
-                    if(ignore.includes(blockName)) { material = this.defaultMaterial }
-                    else { material = await this.textureLoader.blockToMaterial('block/' + blockName) }
+                    let material:Material | Array<Material> = this.defaultMaterial
+                    // if(ignore.includes(blockName)) { material = this.defaultMaterial }
+                    // else { material = await this.textureLoader.blockToMaterial('block/' + blockName) }
                     this.blockOffset.set(element[1].value, new TextureInfo(element[0].substring(10), material))
+ 
                 }
             )
            ).then(() => resolve())

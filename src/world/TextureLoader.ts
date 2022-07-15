@@ -9,32 +9,27 @@ export default class TextureLoader{
     private readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
     private readonly dataExtension:string = '.json'
     private readonly dataDirectory:string = '/texture/assets/minecraft/models/'
-    private readonly arrange:Array<string> = [
-        "up",
-        "down",
-        "east",
-        "west",
-        "north",
-        "south"
+    private readonly arrange:Array<any> = [
+        {face: "south", opction: {rotate: 0}},
+        {face: "north", opction: {rotate: 0}},
+        {face: "west", opction: {rotate: 0}},
+        {face: "east", opction: {rotate: 0}},
+        {face: "up", opction: {rotate: 0}},
+        {face: "down", opction: {rotate: 0}}
     ]
     constructor() {
 
     }
     
-    private async loadTexture(fileName:string, rotate:number): Promise<THREE.Texture> {
+    private async loadTexture(fileName:string): Promise<THREE.Texture> {
         if(this.textures.has(fileName)) {
             const loadTexture = this.textures.get(fileName)!.clone()
-            loadTexture.rotation += rotate
             return loadTexture
         }
         else {
             
             const loadTexture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
-            // loadTexture.wrapS = loadTexture.wrapT = THREE.RepeatWrapping;
-            // loadTexture.offset.set( 0, 0 );
-            // loadTexture.repeat.set( 2, 2 );
             this.textures.set(fileName, loadTexture)
-            loadTexture.rotation += rotate
             return loadTexture
         }
     }
@@ -81,6 +76,12 @@ export default class TextureLoader{
         return original.replace(remove, "") == undefined ? original : original.replace(remove, "")
     }
     
+    private async getMeshBasicMaterial(texture: string, opction: any):Promise<THREE.MeshBasicMaterial> {
+        const loadedTexture = await this.loadTexture(this.removeString(texture, "minecraft:"))
+        return new THREE.MeshBasicMaterial({
+            map: loadedTexture
+        })
+    }
     public async blockToMaterial(block:string):Promise<Array<THREE.Material>> {
         const structure = await this.loadTextureStructure(block)
         const allTexture:strObj = {
@@ -97,19 +98,15 @@ export default class TextureLoader{
             }
         } 
         this.arrange.forEach(element => {
-            if(allTexture.elements[0].faces[element].texture[0] == '#') {
-                allTexture.elements[0].faces[element].texture = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
+            if(allTexture.elements[0].faces[element.face].texture[0] == '#') {
+                allTexture.elements[0].faces[element.face].texture = allTexture.textures[allTexture.elements[0].faces[element.face].texture.substring(1)]
             }
         })
-
-        return await Promise.all([
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["east"].texture, "minecraft:"), 0)}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["north"].texture, "minecraft:"), 0)}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["south"].texture, "minecraft:"), 0)}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["west"].texture, "minecraft:"), 0)}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["up"].texture, "minecraft:"), 0)}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["down"].texture, "minecraft:"), 0)})
-        ])
+        return await Promise.all(
+            this.arrange.map(element => 
+                this.getMeshBasicMaterial(this.removeString(allTexture.elements[0].faces[element.face].texture, "minecraft:"), element.opction)
+            )
+        )
     }
 }
 
