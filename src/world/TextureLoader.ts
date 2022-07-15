@@ -1,5 +1,6 @@
 import axios from 'axios'
 import * as THREE from 'three'
+import { Vector2 } from 'three'
 
 export default class TextureLoader{
     private datas:Map<string, Object> = new Map()
@@ -20,14 +21,20 @@ export default class TextureLoader{
 
     }
     
-    private async loadTexture(fileName:string): Promise<THREE.Texture> {
+    private async loadTexture(fileName:string, rotate:number): Promise<THREE.Texture> {
         if(this.textures.has(fileName)) {
-            return this.textures.get(fileName)!.clone()
+            const loadTexture = this.textures.get(fileName)!.clone()
+            loadTexture.rotation += rotate
+            return loadTexture
         }
         else {
             
             const loadTexture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
+            // loadTexture.wrapS = loadTexture.wrapT = THREE.RepeatWrapping;
+            // loadTexture.offset.set( 0, 0 );
+            // loadTexture.repeat.set( 2, 2 );
             this.textures.set(fileName, loadTexture)
+            loadTexture.rotation += rotate
             return loadTexture
         }
     }
@@ -75,7 +82,6 @@ export default class TextureLoader{
     }
     
     public async blockToMaterial(block:string):Promise<Array<THREE.Material>> {
-        console.log(block)
         const structure = await this.loadTextureStructure(block)
         const allTexture:strObj = {
             textures: {},
@@ -94,20 +100,15 @@ export default class TextureLoader{
             if(allTexture.elements[0].faces[element].texture[0] == '#') {
                 allTexture.elements[0].faces[element].texture = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
             }
-            // console.log(block)
-            if(block == 'block/acacia_wood[axis=x]') {
-                console.log(element, allTexture.elements[0].faces[element].texture)
-            }
-            
         })
 
         return await Promise.all([
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["east"].texture, "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["north"].texture, "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["south"].texture, "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["west"].texture, "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["up"].texture, "minecraft:"))}),
-            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["down"].texture, "minecraft:"))})
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["east"].texture, "minecraft:"), 0)}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["north"].texture, "minecraft:"), 0)}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["south"].texture, "minecraft:"), 0)}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["west"].texture, "minecraft:"), 0)}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["up"].texture, "minecraft:"), 0)}),
+            new THREE.MeshBasicMaterial({map: await this.loadTexture(this.removeString(allTexture.elements[0].faces["down"].texture, "minecraft:"), 0)})
         ])
     }
 }

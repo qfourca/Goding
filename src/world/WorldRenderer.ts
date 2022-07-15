@@ -1,4 +1,4 @@
-import Structure, { TextureInfo } from "./Structure";
+import Structure, { TextureInfo } from "./World";
 import Block from '../block/Block'
 import { Scene, Vector3, Group, Material, Vector2 } from "three";
 import materialList from '../material/material'
@@ -8,14 +8,12 @@ import mouseEvent from '../event/mouseEvent'
 export default class StructureRender {
     private structure: Structure
     private blocks: Array<Block>;
-
     private group:Group = new Group();
-    
-    private debugger:Debugger = new Debugger()
+
     constructor(structure: Structure) {
+        console.log(structure)
         this.structure = structure
         this.blocks = new Array()
-
         this.structure.blockOffset.forEach((val, key, map) => {
             console.log(key, val)
         })
@@ -42,25 +40,6 @@ export default class StructureRender {
     render(scene:Scene) {
         mouseEvent(document.getElementById("three-js container")!, this.group)
         scene.add(this.group)
-    }
-
-}
-
-class Debugger {
-    private unknown:Array<string>
-    constructor() {
-        this.unknown = new Array()
-    }
-    add(arg:string) {
-
-        if(!this.unknown.includes(arg)) {
-            this.unknown.push(arg)
-        }
-    }
-    print() {
-        this.unknown.forEach((element:string) => {
-            console.log(element)
-        })
     }
 }
 

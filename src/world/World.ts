@@ -3,7 +3,7 @@ import TextureLoader from './TextureLoader'
 import ignore from '../material/ignore'
 import { Material } from 'three'
 
-export default class Structure {
+export default class World {
     public size: THREE.Vector3
     public blockOffset: Map<number, TextureInfo> = new Map()
     private blockArray:Array<number> = new Array()
@@ -16,6 +16,7 @@ export default class Structure {
         this.size = new THREE.Vector3(nbt.Width.value, nbt.Length.value, nbt.Height.value)
         this.coefZ = this.size.y * this.size.x
         this.blockArray = nbt.BlockData.value.filter((data: number) => data > -1)
+        
     }
     loadTexture():Promise<void> {
        return new Promise((resolve, rejects) => {
@@ -56,6 +57,8 @@ export class TextureInfo {
         this.material = material
     }
     noOpction() {
-        return this.textureName.substring(0, this.textureName.indexOf('[')) == '' ? this.textureName : this.textureName.substring(0, this.textureName.indexOf('['))
+        return    this.textureName.substring(0, this.textureName.indexOf('[')) == '' 
+                ? this.textureName 
+                : this.textureName.substring(0, this.textureName.indexOf('['))
     }
 }
