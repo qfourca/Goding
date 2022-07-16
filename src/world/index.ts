@@ -12,7 +12,7 @@ export default class Main {
         this.world = new World(mapFile)
         this.chunkSize = chunkSize
         this.chunkNum = new THREE.Vector2(Math.ceil(this.world.size.x / this.chunkSize), Math.ceil(this.world.size.x / this.chunkSize))
-        this.chunks = Array.from(Array(this.chunkNum.x), () => Array(this.chunkNum.y).fill(null)) 
+        this.chunks = Array.from(Array(this.chunkNum.x), () => Array(this.chunkNum.y).fill(null))
     }
     render(scene:Scene) {
         this.world?.loadTexture()
@@ -27,11 +27,14 @@ export default class Main {
                                 (x + 1) * this.chunkSize > this.world!.size.x ? this.world!.size.x : (x + 1) * this.chunkSize,
                                 (y + 1) * this.chunkSize > this.world!.size.y ? this.world!.size.y : (y + 1) * this.chunkSize)
                         ])
-                    this.chunks[x][y].render(scene)
                 })
             })
 
+            this.chunks.forEach((element, x) => {
+                element.forEach(async (unNeed, y) => {
+                    await this.chunks[x][y].render(scene)
+                })
+            })
         })
-
     }
 }

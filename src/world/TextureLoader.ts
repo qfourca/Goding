@@ -10,11 +10,11 @@ export default class TextureLoader{
     private readonly dataExtension:string = '.json'
     private readonly dataDirectory:string = '/texture/assets/minecraft/models/'
     private readonly arrange:Array<any> = [
-        {face: "south", opction: {rotate: 0}},
         {face: "north", opction: {rotate: 0}},
+        {face: "south", opction: {rotate: 0}},
+        {face: "up", opction: {rotate: 0}},
         {face: "west", opction: {rotate: 0}},
         {face: "east", opction: {rotate: 0}},
-        {face: "up", opction: {rotate: 0}},
         {face: "down", opction: {rotate: 0}}
     ]
     constructor() {
@@ -27,8 +27,8 @@ export default class TextureLoader{
             return loadTexture
         }
         else {
-            
-            const loadTexture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
+            const loadTexture:THREE.Texture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
+            loadTexture.magFilter = THREE.NearestFilter
             this.textures.set(fileName, loadTexture)
             return loadTexture
         }
@@ -40,12 +40,13 @@ export default class TextureLoader{
         }
         else {
             try {
-                const loadedData = (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
+                const loadedData = await (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
                 this.datas.set(fileName, loadedData)
                 return loadedData
             }
             catch(e) {
-                console.log(this.dataDirectory + fileName + this.dataExtension)
+                // console.log(this.dataDirectory + fileName + this.dataExtension)
+                throw this.dataDirectory + fileName + this.dataExtension
             }
             
         }
@@ -64,9 +65,8 @@ export default class TextureLoader{
             }
         }
         catch(e) {
-            console.log(array)
+            throw e
         }
-
         return array
     }
     private removeString(original:string, remove:string) {
@@ -82,31 +82,36 @@ export default class TextureLoader{
             map: loadedTexture
         })
     }
-    public async blockToMaterial(block:string):Promise<Array<THREE.Material>> {
-        const structure = await this.loadTextureStructure(block)
-        const allTexture:strObj = {
-            textures: {},
-            elements: {}
-        }
-        structure.forEach(element => {
-            allTexture.textures = { ...allTexture.textures, ...element.textures }
-            allTexture.elements = { ...allTexture.elements, ...element.elements }
-        })
-        for (let element in allTexture.textures) {
-            if(allTexture.textures[element][0] == "#") {
-                allTexture.textures[element] = allTexture.textures[allTexture.textures[element].substring(1)]
+    public async blockToMaterial(block:string):Promise<Array<THREE.Material> | THREE.Material>{
+        try {
+            const structure = await this.loadTextureStructure(block)
+            const allTexture:strObj = {
+                textures: {},
+                elements: {}
             }
-        } 
-        this.arrange.forEach(element => {
-            if(allTexture.elements[0].faces[element.face].texture[0] == '#') {
-                allTexture.elements[0].faces[element.face].texture = allTexture.textures[allTexture.elements[0].faces[element.face].texture.substring(1)]
-            }
-        })
-        return await Promise.all(
-            this.arrange.map(element => 
-                this.getMeshBasicMaterial(this.removeString(allTexture.elements[0].faces[element.face].texture, "minecraft:"), element.opction)
+            structure.forEach(element => {
+                allTexture.textures = { ...allTexture.textures, ...element.textures }
+                allTexture.elements = { ...allTexture.elements, ...element.elements }
+            })
+            for (let element in allTexture.textures) {
+                if(allTexture.textures[element][0] == "#") {
+                    allTexture.textures[element] = allTexture.textures[allTexture.textures[element].substring(1)]
+                }
+            } 
+            this.arrange.forEach(element => {
+                if(allTexture.elements[0].faces[element.face].texture[0] == '#') {
+                    allTexture.elements[0].faces[element.face].texture = allTexture.textures[allTexture.elements[0].faces[element.face].texture.substring(1)]
+                }
+            })
+            return await Promise.all(
+                this.arrange.map(element => 
+                    this.getMeshBasicMaterial(this.removeString(allTexture.elements[0].faces[element.face].texture, "minecraft:"), element.opction)
+                )
             )
-        )
+        }
+        catch(e) {
+            return new THREE.MeshStandardMaterial({ color: 0xFF00FF })
+        }
     }
 }
 

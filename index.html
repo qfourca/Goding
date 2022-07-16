@@ -6,9 +6,35 @@
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="static/styles/main.css">
     <title>Three.JS-Webpack Boilerplate</title>
+    <style>
+			#modal {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.5);
+			}
+
+			#instructions {
+				width: 100%;
+				height: 100%;
+
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+
+				text-align: center;
+				font-size: 14px;
+				cursor: pointer;
+			}
+		</style>
   </head>
   <body>
-    <div id="three-js container"></div>
+    <div id="three-js container">
+      
+    </div>
+    <div id="modal">
+    </div>
   </body>
   <script src="public/bundle.js"></script>
 </html>

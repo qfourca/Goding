@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 export default class Block {
-    private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
+    protected readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
 
-    private readonly geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1)
+    protected geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1)
 
     public mesh: THREE.Mesh
     
