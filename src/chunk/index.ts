@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import mouseEvent from '../event/mouseEvent'
 import World from '../World/World'
 import empty from '../material/empty'
 import Block from '../block/Block'

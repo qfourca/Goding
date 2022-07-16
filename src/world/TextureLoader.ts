@@ -9,13 +9,13 @@ export default class TextureLoader{
     private readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
     private readonly dataExtension:string = '.json'
     private readonly dataDirectory:string = '/texture/assets/minecraft/models/'
-    private readonly arrange:Array<any> = [
-        {face: "north", opction: {rotate: 0}},
-        {face: "south", opction: {rotate: 0}},
-        {face: "up", opction: {rotate: 0}},
-        {face: "west", opction: {rotate: 0}},
-        {face: "east", opction: {rotate: 0}},
-        {face: "down", opction: {rotate: 0}}
+    private readonly arrange:Array<string> = [
+        "south",
+        "down",
+        "up",
+        "west",
+        "east",
+        "north",
     ]
     constructor() {
 
@@ -76,7 +76,7 @@ export default class TextureLoader{
         return original.replace(remove, "") == undefined ? original : original.replace(remove, "")
     }
     
-    private async getMeshBasicMaterial(texture: string, opction: any):Promise<THREE.MeshBasicMaterial> {
+    private async getMeshBasicMaterial(texture: string):Promise<THREE.MeshBasicMaterial> {
         const loadedTexture = await this.loadTexture(this.removeString(texture, "minecraft:"))
         return new THREE.MeshBasicMaterial({
             map: loadedTexture
@@ -99,13 +99,13 @@ export default class TextureLoader{
                 }
             } 
             this.arrange.forEach(element => {
-                if(allTexture.elements[0].faces[element.face].texture[0] == '#') {
-                    allTexture.elements[0].faces[element.face].texture = allTexture.textures[allTexture.elements[0].faces[element.face].texture.substring(1)]
+                if(allTexture.elements[0].faces[element].texture[0] == '#') {
+                    allTexture.elements[0].faces[element].texture = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
                 }
             })
             return await Promise.all(
                 this.arrange.map(element => 
-                    this.getMeshBasicMaterial(this.removeString(allTexture.elements[0].faces[element.face].texture, "minecraft:"), element.opction)
+                    this.getMeshBasicMaterial(this.removeString(allTexture.elements[0].faces[element].texture, "minecraft:"))
                 )
             )
         }

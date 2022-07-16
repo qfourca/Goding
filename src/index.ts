@@ -6,11 +6,12 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 
 import { Vector3 } from 'three'
 
-const container = document.getElementById('three-js container')!
+export const container = document.getElementById('three-js container')!
 const camera = new Core.Camera(75, window.innerWidth / window.innerHeight)
 const raycaster = new Core.Raycaster()
 const renderer = new Core.Renderer(window.innerWidth, window.innerHeight, container)
 const scene = new Core.Scene()
+const player:Player = new Player(camera, 0.1)
 
 
 const ligit = new THREE.DirectionalLight(0xffffff)
@@ -18,19 +19,8 @@ ligit.position.set(0, 1000, 0)
 scene.add(ligit)
 
 
-const pointerControl = new PointerLockControls(camera, container)
-const modal = document.getElementById('modal')
-modal?.addEventListener('click', () => {
-    pointerControl.lock()
-})
-pointerControl.addEventListener( 'lock', function () {
-    modal!.style.display = 'none'
-});
-
-pointerControl.addEventListener( 'unlock', function () {
-});
-
 import BedRock from './block/BedRock'
+import Player from './player'
 
 const bedrock = new BedRock()
 bedrock.render(scene)
@@ -46,7 +36,8 @@ axios.get('/home.json')
 })
 
 ;(function main() {
-	requestAnimationFrame(main)
 
+	requestAnimationFrame(main)
+	player.update()
 	renderer.render(scene, camera)
 })()
