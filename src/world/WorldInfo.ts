@@ -3,32 +3,31 @@ import TextureLoader from './TextureLoader'
 import ignore from '../material/ignore'
 import { Material } from 'three'
 
-export default class World {
+export default class WorldInfo {
     public size: THREE.Vector3
     public blockOffset: Map<number, TextureInfo> = new Map()
     private blockArray:Array<number> = new Array()
     private coefZ:number
-    private textureLoader:TextureLoader = new TextureLoader()
+    private textureLoader:TextureLoader
     private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
     private nbt
     constructor(nbt: any) {
         this.nbt = nbt
-        this.size = new THREE.Vector3(nbt.Width.value, nbt.Length.value, nbt.Height.value)
+        this.size = new THREE.Vector3(this.nbt.width, this.nbt.length, this.nbt.height)
         this.coefZ = this.size.y * this.size.x
-        this.blockArray = nbt.BlockData.value.filter((data: number) => data > -1)
-        
+        this.blockArray = this.nbt.blockData.filter((data: number) => data > -1)
+        this.textureLoader = new TextureLoader(nbt.info, nbt.unexist)
+        console.log(nbt)
     }
     loadTexture():Promise<void> {
        return new Promise((resolve, rejects) => {
            Promise.all(
-            Object.entries(this.nbt.Palette.value).map(
-                async (element: any) => {
-                    const blockName:string = this.temp(element[0].substring(10))
+               this.nbt.palette.map(async (element: any) => {
+                    const blockName:string = this.temp(element[1].name)
                     let material:Material | Array<Material> | null = null
                     material = await this.textureLoader.blockToMaterial('block/' + blockName)
-                    this.blockOffset.set(element[1].value, new TextureInfo(element[0].substring(10), material))
-                }
-            )
+                    this.blockOffset.set(element[0], new TextureInfo(element[1].name, material))
+            })
            ).then(() => resolve())
         })
     }

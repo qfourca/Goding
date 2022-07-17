@@ -18,9 +18,7 @@ fs.readFile(process.argv[2], function(error, data) {
         result.length = data.value.Length.value
         result.width = data.value.Width.value
         result.height = data.value.Height.value
-
-        console.log(data)
-        // console.log(data.value.BlockData.value)
+        result.blockData = data.value.BlockData.value
         result.palette = new Map()
         Object.entries(data.value.Palette.value).forEach(element => { result.palette.set(element[1].value, { name: removeMinecraft(element[0])} )})
         for(let i = 0; i < result.palette.size; i++) {
@@ -32,6 +30,11 @@ fs.readFile(process.argv[2], function(error, data) {
         const { info, unexist } = loadAllFiles(Array.from(result.palette).map(element => 'block/' + removeOpction(element[1].name)))
         result.info = Array.from(info)
         result.unexist = unexist
+        result.info.forEach(element => {
+            if(element[0] == 'block/cube') {
+                console.log(element[1].elements[0].faces)
+            }
+        })
         fs.writeFileSync(`./${process.argv[2].split('.')[0]}.json`, JSON.stringify(result));
         console.log("Preprocessing Success! filename: " + `${process.argv[2].split('.')[0]}.json`)
     });

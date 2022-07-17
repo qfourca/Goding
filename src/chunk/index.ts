@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import World from '../World/World'
+import World from '../world/WorldInfo'
 import empty from '../material/empty'
 import Block from '../block/Block'
 
@@ -18,11 +18,9 @@ export default class Chunk {
 
     async render(scene:THREE.Scene) {
         let counter = 0
-        console.log(this.world.blockOffset)
         for (let x = this.part[0].x; x < this.part[1].x; x++) {
             for (let y = this.part[0].y; y < this.part[1].y; y ++) {
                 for (let z = 0; z < this.world.size.z ; z ++) {
-
                     const textureInfo:any
                     = this.world.blockOffset.get(this.world.in(new THREE.Vector3(x, y, z)))
                     if(!empty.includes(textureInfo.noOpction())) {
@@ -33,7 +31,6 @@ export default class Chunk {
                 }
             }
         }
-        console.log(counter)
         scene.add( this.group );
     }
 }

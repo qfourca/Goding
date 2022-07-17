@@ -25,10 +25,9 @@ import Player from './player'
 const bedrock = new BedRock()
 bedrock.render(scene)
 
-axios.get('/blocks.json')
+axios.get('/test.json')
 .then((response) => {
-	console.log(response.data.value)
-    const world:World = new World(response.data.value, 16)
+    const world:World = new World(response.data, 16)
     world.render(scene)
 })
 .catch(error => {

@@ -1,9 +1,9 @@
 import axios from 'axios'
 import * as THREE from 'three'
+import { Vector2 } from 'three'
 
 export default class TextureLoader{
     private datas:Map<string, Object> = new Map()
-    private ignores:Array<string>
     private textures: Map<string, THREE.Texture> = new Map()
     private readonly textureExtension:string = '.png'
     private readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
@@ -17,22 +17,10 @@ export default class TextureLoader{
         "west",
         "east",
     ]
-    constructor(local:any, ignores:Array<string>) {
-        this.datas = new Map(local)
-        this.ignores = ignores
-    }
-    private copyObj(obj:any) {
-        const result:any = {};
-        for (let key in obj) {
-          if (typeof obj[key] === 'object') {
-            result[key] = this.copyObj(obj[key]);
-          } else {
-            result[key] = obj[key];
-          }
-        }
-        return result;
-    }
+    constructor() {
 
+    }
+    
     private async loadTexture(fileName:string): Promise<THREE.Texture> {
         if(this.textures.has(fileName)) {
             const loadTexture = this.textures.get(fileName)!.clone()
@@ -46,19 +34,33 @@ export default class TextureLoader{
         }
     }
 
-    private loadData(fileName:string): any {
-        return this.datas.get(fileName)
+    private async loadData(fileName:string): Promise<any> {
+        if(this.datas.has(fileName)) {
+            return this.datas.get(fileName)
+        }
+        else {
+            try {
+                const loadedData = await (await axios.get(this.dataDirectory + fileName + this.dataExtension)).data
+                this.datas.set(fileName, loadedData)
+                return loadedData
+            }
+            catch(e) {
+                // console.log(this.dataDirectory + fileName + this.dataExtension)
+                throw this.dataDirectory + fileName + this.dataExtension
+            }
+            
+        }
     }
 
-    private loadTextureStructure(fileName: string):Array<any> {
+    private async loadTextureStructure(fileName: string):Promise<any[]> {
         let array = new Array()
-        let load = this.loadData(fileName)
-        array.push(load)
+        const test = await this.loadData(fileName)
+        array.push(test)
         try {
             while(array.at(-1).parent != undefined) {
                 let parent = array.at(-1).parent
                 parent = this.removeString(parent, "minecraft:")
-                let load = this.loadData(parent)
+                let load = await this.loadData(parent)
                 array.push(load)
             }
         }
@@ -82,39 +84,35 @@ export default class TextureLoader{
         })
     }
     public async blockToMaterial(block:string):Promise<Array<THREE.Material> | THREE.Material | null>{
-        if(this.ignores.includes(block)) { return null }
-        const structure:Array<any> = this.loadTextureStructure(block)
-        let allTexture:strObj = {
-            textures: {},
-            elements: {}
-        }
-        structure.forEach(element => {
-            allTexture.textures = { ...allTexture.textures, ...element.textures }
-            allTexture.elements = { ...allTexture.elements, ...element.elements }
-        })
-        allTexture = this.copyObj(allTexture)
         try {
+            const structure = await this.loadTextureStructure(block)
+            const allTexture:strObj = {
+                textures: {},
+                elements: {}
+            }
+            structure.forEach(element => {
+                allTexture.textures = { ...allTexture.textures, ...element.textures }
+                allTexture.elements = { ...allTexture.elements, ...element.elements }
+            })
             for (let element in allTexture.textures) {
                 if(allTexture.textures[element][0] == "#") {
                     allTexture.textures[element] = allTexture.textures[allTexture.textures[element].substring(1)]
                 }
-            }
+            } 
             this.arrange.forEach(element => {
                 if(allTexture.elements[0].faces[element].texture[0] == '#') {
-                    allTexture.elements[0].faces[element].texture 
-                    = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
+                    allTexture.elements[0].faces[element].texture = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
                 }
             })
             return await Promise.all(
                 this.arrange.map(element => 
-                    this.getMeshBasicMaterial(allTexture.elements[0].faces[element].texture)
+                    this.getMeshBasicMaterial(this.removeString(allTexture.elements[0].faces[element].texture, "minecraft:"))
                 )
             )
         }
         catch(e) {
             return null
         }
-
     }
 }
 
