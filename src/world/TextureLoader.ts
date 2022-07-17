@@ -7,8 +7,6 @@ export default class TextureLoader{
     private textures: Map<string, THREE.Texture> = new Map()
     private readonly textureExtension:string = '.png'
     private readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
-    private readonly dataExtension:string = '.json'
-    private readonly dataDirectory:string = '/texture/assets/minecraft/models/'
     private readonly arrange:Array<string> = [
         "south",
         "north",
@@ -114,7 +112,6 @@ export default class TextureLoader{
         catch(e) {
             return null
         }
-
     }
 }
 

@@ -9,7 +9,6 @@ export default class WorldInfo {
     private blockArray:Array<number> = new Array()
     private coefZ:number
     private textureLoader:TextureLoader
-    private readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
     private nbt
     constructor(nbt: any) {
         this.nbt = nbt
@@ -24,6 +23,7 @@ export default class WorldInfo {
            Promise.all(
                this.nbt.palette.map(async (element: any) => {
                     const blockName:string = this.temp(element[1].name)
+                    console.log(blockName)
                     let material:Material | Array<Material> | null = null
                     material = await this.textureLoader.blockToMaterial('block/' + blockName)
                     this.blockOffset.set(element[0], new TextureInfo(element[1].name, material))
@@ -49,7 +49,10 @@ export default class WorldInfo {
 export class TextureInfo {
     textureName: string
     material: Array<THREE.Material> | THREE.Material | null
-    constructor(name: string, material:Array<THREE.Material> | THREE.Material | null) {
+    constructor(
+        name: string, 
+        material:Array<THREE.Material> | THREE.Material | null,
+    ) {
         this.textureName = name
         this.material = material
     }

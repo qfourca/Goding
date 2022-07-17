@@ -6,8 +6,8 @@ class Camera extends THREE.PerspectiveCamera{
 		this.position.y = 15
 		this.position.x = -5
 		this.fov = 50
-		this.near = 0.5
-		this.far = 1000
+		this.near = 0.05
+		this.far = 500
 		this.lookAt(0, 0, 0)
 		
 		this.updateProjectionMatrix()
