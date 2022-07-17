@@ -16,8 +16,8 @@ export default class Player {
             ['a', {dir: 'z', reverse: true}],
             ['s', {dir: 'x', reverse: true}],
             ['d', {dir: 'z', reverse: false}],
-            ['q', {dir: 'y', reverse: true}],
-            ['e', {dir: 'y', reverse: false}],
+            ['Shift', {dir: 'y', reverse: true}],
+            [' ', {dir: 'y', reverse: false}],
         ]
     )
     constructor(camera:Camera, speed:number) {

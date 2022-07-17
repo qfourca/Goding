@@ -7,11 +7,10 @@ export default class Block {
     public mesh: THREE.Mesh
     
     constructor(position: THREE.Vector3, material?: THREE.Material | Array<THREE.Material>) {
-        this.mesh = new THREE.Mesh(
-            this.geometry,
-            material 
-            ? material 
-            : this.defaultMaterial) 
+        if(material == null) {
+            material = this.defaultMaterial
+        }
+        this.mesh = new THREE.Mesh(this.geometry, material)
         this.mesh.position.set(position.x, position.y, position.z)
     }
     render(scene: THREE.Scene) {

@@ -9,5 +9,5 @@ export default [
 
     // "brewing_stand",
     // "acacia_stairs",
-    // "acacia_planks"
+
 ]

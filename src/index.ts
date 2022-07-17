@@ -11,7 +11,7 @@ const camera = new Core.Camera(75, window.innerWidth / window.innerHeight)
 const raycaster = new Core.Raycaster()
 const renderer = new Core.Renderer(window.innerWidth, window.innerHeight, container)
 const scene = new Core.Scene()
-const player:Player = new Player(camera, 0.1)
+const player:Player = new Player(camera, 0.15)
 
 
 const ligit = new THREE.DirectionalLight(0xffffff)
@@ -25,7 +25,7 @@ import Player from './player'
 const bedrock = new BedRock()
 bedrock.render(scene)
 
-axios.get('/home.json')
+axios.get('/blocks.json')
 .then((response) => {
 	console.log(response.data.value)
     const world:World = new World(response.data.value, 16)

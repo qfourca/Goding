@@ -11,11 +11,11 @@ export default class TextureLoader{
     private readonly dataDirectory:string = '/texture/assets/minecraft/models/'
     private readonly arrange:Array<string> = [
         "south",
-        "down",
+        "north",
         "up",
+        "down",
         "west",
         "east",
-        "north",
     ]
     constructor() {
 
@@ -79,10 +79,11 @@ export default class TextureLoader{
     private async getMeshBasicMaterial(texture: string):Promise<THREE.MeshBasicMaterial> {
         const loadedTexture = await this.loadTexture(this.removeString(texture, "minecraft:"))
         return new THREE.MeshBasicMaterial({
-            map: loadedTexture
+            map: loadedTexture,
+            transparent: true
         })
     }
-    public async blockToMaterial(block:string):Promise<Array<THREE.Material> | THREE.Material>{
+    public async blockToMaterial(block:string):Promise<Array<THREE.Material> | THREE.Material | null>{
         try {
             const structure = await this.loadTextureStructure(block)
             const allTexture:strObj = {
@@ -110,7 +111,7 @@ export default class TextureLoader{
             )
         }
         catch(e) {
-            return new THREE.MeshStandardMaterial({ color: 0xFF00FF })
+            return null
         }
     }
 }

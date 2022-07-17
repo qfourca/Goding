@@ -27,10 +27,11 @@ export default class Main {
                                 (x + 1) * this.chunkSize > this.world!.size.x ? this.world!.size.x : (x + 1) * this.chunkSize,
                                 (y + 1) * this.chunkSize > this.world!.size.y ? this.world!.size.y : (y + 1) * this.chunkSize)
                         ])
+
                 })
             })
 
-            this.chunks.forEach((element, x) => {
+            this.chunks.forEach(async (element, x) => {
                 element.forEach(async (unNeed, y) => {
                     await this.chunks[x][y].render(scene)
                 })
