@@ -16,18 +16,21 @@ export default class WorldInfo {
         this.blockArray = this.nbt.blockData.filter((data: number) => data > -1)
         // console.log(this.nbt.blockData.filter((data: number) => data <= -1).length)
         this.textureLoader = new TextureLoader(nbt.info, nbt.unexist)
+        console.log(nbt.unexist)
     }
     loadTexture():Promise<void> {
        return new Promise((resolve, rejects) => {
            Promise.all(
                this.nbt.palette.map(async (element: any) => {
                     const blockName:string = this.temp(element[1].name)
-                    let material:Material | Array<Material> | null = null
-                    material = await this.textureLoader.blockToMaterial('block/' + blockName)
-                    // if(blockName == 'oak_leaves') {
-                    //     console.log(element)
-                    // }
-                    this.blockOffset.set(element[0], new TextureInfo(element[1].name, material))
+                    const material = await this.textureLoader.blockToMaterial('block/' + blockName)
+                    if(material != null) {
+                        this.blockOffset.set(element[0], new TextureInfo(element[1].name, material.material, material.origin))
+                    }
+                    else {
+                        this.blockOffset.set(element[0], new TextureInfo(element[1].name, null, null))
+                    }
+                    
             })
            ).then(() => resolve())
         })
@@ -50,12 +53,15 @@ export default class WorldInfo {
 export class TextureInfo {
     textureName: string
     material: Array<THREE.Material> | THREE.Material | null
+    origin: string | null
     constructor(
         name: string, 
         material:Array<THREE.Material> | THREE.Material | null,
+        origin: string | null
     ) {
         this.textureName = name
         this.material = material
+        this.origin = origin
     }
     noOpction() {
         return    this.textureName.substring(0, this.textureName.indexOf('[')) == '' 

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 export default class Block {
-    protected readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
+    protected static readonly defaultMaterial: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xFF00FF })
 
     protected geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1)
 
@@ -8,7 +8,7 @@ export default class Block {
     
     constructor(position: THREE.Vector3, material?: THREE.Material | Array<THREE.Material>) {
         if(material == null) {
-            material = this.defaultMaterial
+            material = Block.defaultMaterial
         }
         this.mesh = new THREE.Mesh(this.geometry, material)
         this.mesh.castShadow = true

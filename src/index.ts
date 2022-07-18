@@ -13,7 +13,7 @@ const raycaster = new Core.Raycaster(camera, scene)
 const player:Player = new Player(camera, 0.15)
 
 
-const ligit = new THREE.AmbientLight(0xe0e0e0)
+const ligit = new THREE.AmbientLight(0xeeeeee)
 ligit.position.set(0, 1000, 0)
 scene.add(ligit)
 
@@ -22,7 +22,7 @@ import BedRock from './block/BedRock'
 
 const bedrock = new BedRock()
 bedrock.render(scene)
-axios.get('/dgsw.json')
+axios.get('/dormitory.json')
 .then((response) => {
     const world:World = new World(response.data, 16)
     world.render(scene)

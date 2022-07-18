@@ -5,9 +5,9 @@ export default class TextureLoader{
     private datas:Map<string, Object> = new Map()
     private ignores:Array<string>
     private textures: Map<string, THREE.Texture> = new Map()
-    private readonly textureExtension:string = '.png'
-    private readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
-    private readonly arrange:Array<string> = [
+    private static readonly textureExtension:string = '.png'
+    private static readonly textureDirectory:string = '/texture/assets/minecraft/textures/'
+    private static readonly block:Array<string> = [
         "south",
         "north",
         "up",
@@ -15,6 +15,11 @@ export default class TextureLoader{
         "west",
         "east",
     ]
+    private static readonly cross:Array<string> = [
+        "south",
+        "north",
+    ]
+
     constructor(local:any, ignores:Array<string>) {
         this.datas = new Map(local)
         this.ignores = ignores
@@ -37,7 +42,9 @@ export default class TextureLoader{
             return loadTexture
         }
         else {
-            const loadTexture:THREE.Texture = await new THREE.TextureLoader().loadAsync(this.textureDirectory + fileName + this.textureExtension)
+            const loadTexture:THREE.Texture 
+            = await new THREE.TextureLoader()
+            .loadAsync(TextureLoader.textureDirectory + fileName + TextureLoader.textureExtension)
             loadTexture.magFilter = THREE.NearestFilter
             this.textures.set(fileName, loadTexture)
             return loadTexture
@@ -80,9 +87,8 @@ export default class TextureLoader{
             color: greenTexture.includes(texture.substring(6)) ? new THREE.Color(0.2, 0.8, 0.2) : new THREE.Color(1, 1, 1)
         })
     }
-    public async blockToMaterial(block:string):Promise<Array<THREE.Material> | THREE.Material | null>{
-
-        if(this.ignores.includes(block)) { return null }
+    public async blockToMaterial(block:string):Promise<any>{
+        if(this.ignores.includes(block)) { return null; }
         const structure:Array<any> = this.loadTextureStructure(block)
         let allTexture:strObj = {
             textures: {},
@@ -94,26 +100,36 @@ export default class TextureLoader{
         })
         allTexture = this.copyObj(allTexture)
         try {
+            const origin = this.removeString(this.removeString(structure[structure.length - 2].parent, "minecraft:").substring(6), block)
             for (let element in allTexture.textures) {
                 if(allTexture.textures[element][0] == "#") {
                     allTexture.textures[element] = allTexture.textures[allTexture.textures[element].substring(1)]
                 }
                 allTexture.textures[element] = this.removeString(allTexture.textures[element], "minecraft:")
             }
-            this.arrange.forEach(element => {
+            let textureArray
+            switch (origin) {
+                case "cross": textureArray = TextureLoader.cross; break;
+                default: textureArray = TextureLoader.block
+            }
+            textureArray.forEach(element => {
                 if(allTexture.elements[0].faces[element].texture[0] == '#') {
                     allTexture.elements[0].faces[element].texture 
                     = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
                 }
             })
-
-            return await Promise.all(
-                this.arrange.map(element => 
-                    this.getMeshBasicMaterial(allTexture.elements[0].faces[element].texture)
-                )
-            )
+            return {
+                origin: origin,
+                material: await Promise.all(
+                    textureArray.map(element => 
+                        this.getMeshBasicMaterial(allTexture.elements[0].faces[element].texture)
+                ))
+            }
         }
         catch(e) {
+            if(block == 'block/cobweb') {
+                
+            }
             return null
         }
     }
