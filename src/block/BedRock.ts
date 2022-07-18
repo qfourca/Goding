@@ -12,6 +12,7 @@ export default class BedRock extends Block {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.magFilter = THREE.NearestFilter
+        this.mesh.receiveShadow = true;
         this.mesh = new THREE.Mesh(new THREE.BoxGeometry(1000, 1, 1000), new THREE.MeshStandardMaterial({map: texture, side: THREE.BackSide}))
     }
 

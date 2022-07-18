@@ -11,6 +11,8 @@ export default class Block {
             material = this.defaultMaterial
         }
         this.mesh = new THREE.Mesh(this.geometry, material)
+        this.mesh.castShadow = true
+        this.mesh.receiveShadow = true;
         this.mesh.position.set(position.x, position.y, position.z)
     }
     render(scene: THREE.Scene) {

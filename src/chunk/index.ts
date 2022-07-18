@@ -29,14 +29,15 @@ export default class Chunk {
             for (let y = this.part[0].y; y < this.part[1].y; y ++) {
                 for (let z = 0; z < this.world.size.z ; z ++) {
                     const hear:number = this.world.in(new THREE.Vector3(x, y, z))
-                    const textureInfo:any
-                    = this.world.blockOffset.get(hear)
+                    const textureInfo:any = this.world.blockOffset.get(hear)
                     if(this.instances.has(hear)) {
-                        this.instances.get(hear)?.render(new THREE.Vector3(x, z, y), scene)
+                        this.instances.get(hear)?.render(new THREE.Vector3(x, z + 1, y), scene)
                     }
                     else if(!empty.includes(textureInfo.noOpction())) {
+
+
                         const material:any = textureInfo.material
-                        this.blocks[counter] = new Block(new THREE.Vector3(x, z, y), material)
+                        this.blocks[counter] = new Block(new THREE.Vector3(x, z + 1, y), material)
                         this.group.add(this.blocks[counter].mesh)
                     }
                 }

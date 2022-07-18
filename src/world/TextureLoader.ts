@@ -1,4 +1,4 @@
-import axios from 'axios'
+import greenTexture from '../material/green'
 import * as THREE from 'three'
 
 export default class TextureLoader{
@@ -76,10 +76,12 @@ export default class TextureLoader{
         const loadedTexture = await this.loadTexture(this.removeString(texture, "minecraft:"))
         return new THREE.MeshBasicMaterial({
             map: loadedTexture,
-            transparent: true
+            transparent: true,
+            color: greenTexture.includes(texture.substring(6)) ? new THREE.Color(0.2, 0.8, 0.2) : new THREE.Color(1, 1, 1)
         })
     }
     public async blockToMaterial(block:string):Promise<Array<THREE.Material> | THREE.Material | null>{
+
         if(this.ignores.includes(block)) { return null }
         const structure:Array<any> = this.loadTextureStructure(block)
         let allTexture:strObj = {
@@ -96,6 +98,7 @@ export default class TextureLoader{
                 if(allTexture.textures[element][0] == "#") {
                     allTexture.textures[element] = allTexture.textures[allTexture.textures[element].substring(1)]
                 }
+                allTexture.textures[element] = this.removeString(allTexture.textures[element], "minecraft:")
             }
             this.arrange.forEach(element => {
                 if(allTexture.elements[0].faces[element].texture[0] == '#') {
@@ -103,6 +106,7 @@ export default class TextureLoader{
                     = allTexture.textures[allTexture.elements[0].faces[element].texture.substring(1)]
                 }
             })
+
             return await Promise.all(
                 this.arrange.map(element => 
                     this.getMeshBasicMaterial(allTexture.elements[0].faces[element].texture)

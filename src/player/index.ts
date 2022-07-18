@@ -20,7 +20,10 @@ export default class Player {
             [' ', {dir: 'y', reverse: false}],
         ]
     )
-    constructor(camera:Camera, speed:number) {
+    constructor(
+        camera:Camera, 
+        speed:number
+    ) {
         this.camera = camera
         this.velocity = speed
 
@@ -35,7 +38,6 @@ export default class Player {
         this.pointerLockControls.addEventListener( 'unlock', function () {
             modal!.style.display = ''
         });
-        
         event("keydown", this.keydown, this)
         event("keyup", this.keyup, this)
     }

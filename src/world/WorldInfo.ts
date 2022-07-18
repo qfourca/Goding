@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import TextureLoader from './TextureLoader'
-import ignore from '../material/ignore'
 import { Material } from 'three'
 
 export default class WorldInfo {
@@ -15,17 +14,19 @@ export default class WorldInfo {
         this.size = new THREE.Vector3(this.nbt.width, this.nbt.length, this.nbt.height)
         this.coefZ = this.size.y * this.size.x
         this.blockArray = this.nbt.blockData.filter((data: number) => data > -1)
+        // console.log(this.nbt.blockData.filter((data: number) => data <= -1).length)
         this.textureLoader = new TextureLoader(nbt.info, nbt.unexist)
-        console.log(nbt)
     }
     loadTexture():Promise<void> {
        return new Promise((resolve, rejects) => {
            Promise.all(
                this.nbt.palette.map(async (element: any) => {
                     const blockName:string = this.temp(element[1].name)
-                    console.log(blockName)
                     let material:Material | Array<Material> | null = null
                     material = await this.textureLoader.blockToMaterial('block/' + blockName)
+                    // if(blockName == 'oak_leaves') {
+                    //     console.log(element)
+                    // }
                     this.blockOffset.set(element[0], new TextureInfo(element[1].name, material))
             })
            ).then(() => resolve())

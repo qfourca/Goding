@@ -35,8 +35,6 @@ export default class Main {
                     }
                 }
             })
-            console.log(this.worldinfo)
-            console.log(this.chunkNum)
             this.chunks.forEach((element, x) => {
                 element.forEach((unNeed, y) => {
                     this.chunks[x][y] = new Chunk(

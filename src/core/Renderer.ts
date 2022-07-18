@@ -7,6 +7,7 @@ export default class Renderer extends THREE.WebGLRenderer{
 		})
 		this.setSize(width, height)
 		domElement.appendChild(this.domElement);
+		this.shadowMap.enabled = true;
 	}
 }
 //export default new Renderer(window.innerWidth, window.innerHeight, document.getElementById('three-js container')!)

@@ -2,39 +2,33 @@
 var fs = require('fs'),
     nbt = require('prismarine-nbt')
     io = require('fs').promises
-
+const { Schematic } = require('prismarine-schematic')
 
 const infoDir = './texture/assets/minecraft/models/'
 const dataExtension = '.json'
 
 
 fs.readFile(process.argv[2], function(error, data) {
-
     if(error) {
         console.log(error.message)
     }
-    nbt.parse(data, function(error, data) {
+    nbt.parse(data, async function(error, data) {
         let result = new Object()
         result.length = data.value.Length.value
         result.width = data.value.Width.value
         result.height = data.value.Height.value
-        result.blockData = data.value.BlockData.value
+        result.blockData = (await Schematic.read(await io.readFile(process.argv[2]))).blocks
         result.palette = new Map()
         Object.entries(data.value.Palette.value).forEach(element => { result.palette.set(element[1].value, { name: removeMinecraft(element[0])} )})
         for(let i = 0; i < result.palette.size; i++) {
             const element = result.palette.get(i)
-            element.count = data.value.BlockData.value.reduce((cnt, element) => cnt + (i === element))
+            element.count = result.blockData.reduce((cnt, element) => cnt + (i === element))
             console.log((i + 1) + ' / ' + result.palette.size)
         }
         result.palette = Array.from(new Map([...result.palette].sort((a, b) => a[0] - b[0])));
         const { info, unexist } = loadAllFiles(Array.from(result.palette).map(element => 'block/' + removeOpction(element[1].name)))
         result.info = Array.from(info)
         result.unexist = unexist
-        result.info.forEach(element => {
-            if(element[0] == 'block/cube') {
-                console.log(element[1].elements[0].faces)
-            }
-        })
         fs.writeFileSync(`./${process.argv[2].split('.')[0]}.json`, JSON.stringify(result));
         console.log("Preprocessing Success! filename: " + `${process.argv[2].split('.')[0]}.json`)
     });

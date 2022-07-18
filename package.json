@@ -27,7 +27,9 @@
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
+    "nbt": "^0.8.1",
     "prismarine-nbt": "^2.2.1",
+    "prismarine-schematic": "^1.2.3",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.4"
   }
